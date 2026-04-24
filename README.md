@@ -1,87 +1,263 @@
-       <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZedSounds | Zambian Music Hub</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { background-color: #0b0e14; color: #e2e8f0; font-family: 'Inter', sans-serif; }
-        .copper-gradient { background: linear-gradient(135deg, #d9480f 0%, #f76707 100%); }
-        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); transition: 0.3s; }
-        .glass-card:hover { background: rgba(255, 255, 255, 0.06); transform: translateY(-5px); }
-        .music-player { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border-top: 1px solid rgba(255, 255, 255, 0.1); }
-        .active-tab { border-bottom: 2px solid #d9480f; color: white; }
-    </style>
-</head>
-<body class="pb-32">
+     import React, { useState, useEffect, useRef } from 'react';
+import { Search, Play, Pause, Bell, CheckCircle, Music, Flame, Calendar, Layers, Share2, Volume2 } from 'lucide-react';
 
-    <nav class="flex items-center justify-between px-6 py-4 sticky top-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/5">
-        <div class="flex items-center gap-2 cursor-pointer" onclick="showPage('home')">
-            <div class="w-10 h-10 copper-gradient rounded-xl flex items-center justify-center font-black text-white italic shadow-lg shadow-orange-900/40">ZS</div>
-            <h1 class="text-xl font-bold tracking-tighter">ZED<span class="text-orange-500">SOUNDS</span></h1>
+const App = () => {
+  // --- DATABASE ---
+  const songDatabase = [
+    { id: 1, title: "Amapalo", artist: "Yo Maps", cat: "Zed-Pop", art: "bg-gradient-to-br from-orange-500 to-red-600", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", trend: true, plays: "1.2M" },
+    { id: 2, title: "Psychology", artist: "Chef 187", cat: "Hip-Hop", art: "bg-gradient-to-br from-blue-600 to-indigo-700", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", trend: true, plays: "940K" },
+    { id: 3, title: "Konka", artist: "Chile One", cat: "Zed-Pop", art: "bg-gradient-to-br from-emerald-500 to-teal-700", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", trend: false, plays: "420K" },
+    { id: 4, title: "Never Again", artist: "Macky 2", cat: "Hip-Hop", art: "bg-gradient-to-br from-slate-700 to-gray-900", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", trend: true, plays: "2.1M" },
+    { id: 5, title: "Zambian Anthem", artist: "Heritage Singers", cat: "Kalindula", art: "bg-gradient-to-br from-green-600 to-yellow-600", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3", trend: false, plays: "150K" }
+  ];
+
+  // --- STATE ---
+  const [activeTab, setActiveTab] = useState('trending');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentSong, setCurrentSong] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  
+  const audioRef = useRef(null);
+
+  // --- AUDIO LOGIC ---
+  useEffect(() => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.play().catch(() => setIsPlaying(false));
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  }, [isPlaying, currentSong]);
+
+  const onTimeUpdate = () => {
+    const curr = audioRef.current.currentTime;
+    const dur = audioRef.current.duration;
+    if (dur) {
+      setProgress((curr / dur) * 100);
+      setCurrentTime(curr);
+      setDuration(dur);
+    }
+  };
+
+  const formatTime = (time) => {
+    const mins = Math.floor(time / 60);
+    const secs = Math.floor(time % 60);
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  };
+
+  const handlePlaySong = (song) => {
+    if (currentSong?.id === song.id) {
+      setIsPlaying(!isPlaying);
+    } else {
+      setCurrentSong(song);
+      setIsPlaying(true);
+    }
+  };
+
+  const handleSeek = (e) => {
+    const bounds = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - bounds.left;
+    const width = bounds.width;
+    const percentage = x / width;
+    audioRef.current.currentTime = percentage * duration;
+  };
+
+  // --- FILTERING ---
+  const filteredSongs = songDatabase.filter(s => 
+    s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    s.artist.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    s.cat.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const displayList = searchQuery 
+    ? filteredSongs 
+    : activeTab === 'trending' 
+      ? songDatabase.filter(s => s.trend) 
+      : activeTab === 'new' 
+        ? [...songDatabase].reverse() 
+        : [];
+
+  return (
+    <div className="min-h-screen bg-[#020617] text-slate-100 font-sans pb-44 selection:bg-orange-500/30">
+      <audio 
+        ref={audioRef} 
+        src={currentSong?.url} 
+        onTimeUpdate={onTimeUpdate}
+        onEnded={() => setIsPlaying(false)}
+      />
+
+      {/* TOP NAVIGATION */}
+      <nav className="sticky top-0 z-[60] bg-[#0f172a]/70 backdrop-blur-xl px-6 py-4 flex items-center justify-between border-b border-white/5">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-orange-600 rounded-2xl flex items-center justify-center rotate-3 shadow-xl shadow-orange-600/20">
+            <span className="text-white font-black italic text-lg">ZS</span>
+          </div>
+          <div>
+            <h1 className="text-xl font-extrabold tracking-tighter leading-none uppercase">
+              ZED<span className="text-orange-500">SOUNDS</span>
+            </h1>
+            <span className="text-[9px] uppercase tracking-[0.2em] opacity-50 font-bold">Pro Architecture</span>
+          </div>
         </div>
-        
-        <div class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-400">
-            <button onclick="showPage('home')" class="hover:text-white transition-colors">Home</button>
-            <button onclick="showPage('artist')" class="hover:text-white transition-colors">Artist Portal</button>
+        <div className="flex gap-3">
+          <button className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors">
+            <Bell size={18} />
+          </button>
+        </div>
+      </nav>
+
+      {/* SEARCH SYSTEM */}
+      <div className="px-6 mt-8">
+        <div className="relative group">
+          <input 
+            type="text" 
+            placeholder="Search artists, songs, genres..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-white/5 border border-white/10 rounded-[1.5rem] py-4 pl-14 pr-4 text-sm outline-none focus:border-orange-500/50 focus:bg-white/10 transition-all shadow-inner placeholder:text-slate-600"
+          />
+          <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-orange-500 transition-colors">
+            <Search size={20} />
+          </div>
+        </div>
+      </div>
+
+      {/* TABS */}
+      {!searchQuery && (
+        <div className="flex items-center justify-around px-6 mt-8 border-b border-white/5 text-sm font-bold text-slate-500">
+          <button 
+            onClick={() => setActiveTab('trending')}
+            className={`pb-4 transition-all relative ${activeTab === 'trending' ? 'text-orange-500' : ''}`}
+          >
+            <div className="flex items-center gap-2">
+              <Flame size={16} /> <span>Trending</span>
+            </div>
+            {activeTab === 'trending' && <div className="absolute bottom-[-1px] left-0 right-0 h-[2px] bg-orange-500 rounded-full" />}
+          </button>
+          <button 
+            onClick={() => setActiveTab('new')}
+            className={`pb-4 transition-all relative ${activeTab === 'new' ? 'text-orange-500' : ''}`}
+          >
+            <div className="flex items-center gap-2">
+              <Calendar size={16} /> <span>New Hits</span>
+            </div>
+            {activeTab === 'new' && <div className="absolute bottom-[-1px] left-0 right-0 h-[2px] bg-orange-500 rounded-full" />}
+          </button>
+          <button 
+            onClick={() => setActiveTab('genres')}
+            className={`pb-4 transition-all relative ${activeTab === 'genres' ? 'text-orange-500' : ''}`}
+          >
+            <div className="flex items-center gap-2">
+              <Layers size={16} /> <span>Categories</span>
+            </div>
+            {activeTab === 'genres' && <div className="absolute bottom-[-1px] left-0 right-0 h-[2px] bg-orange-500 rounded-full" />}
+          </button>
+        </div>
+      )}
+
+      {/* CONTENT AREA */}
+      <div className="px-6 mt-8 animate-in fade-in duration-500">
+        {searchQuery && (
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-6">
+            Search Results for "{searchQuery}"
+          </p>
+        )}
+
+        {activeTab === 'genres' && !searchQuery ? (
+          <div className="grid grid-cols-2 gap-4">
+            {['Zed-Pop', 'Hip-Hop', 'Kalindula', 'Gospel', 'Zamrock', 'R&B'].map((genre) => (
+              <div key={genre} className="h-36 bg-white/5 rounded-[2rem] border border-white/5 p-6 flex flex-col justify-end group cursor-pointer hover:bg-white/10 transition-all">
+                <Music className="text-orange-500 mb-auto opacity-40 group-hover:opacity-100 transition-opacity" size={24} />
+                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-tighter">Genre</span>
+                <h4 className="font-black text-xl leading-none group-hover:text-orange-500 transition-colors">{genre}</h4>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {displayList.map((song) => (
+              <div 
+                key={song.id} 
+                onClick={() => handlePlaySong(song)}
+                className={`group p-4 rounded-[1.8rem] flex items-center justify-between transition-all cursor-pointer border ${currentSong?.id === song.id ? 'bg-white/10 border-orange-500/30' : 'bg-white/5 border-transparent hover:bg-white/10'}`}
+              >
+                <div className="flex items-center gap-4 min-w-0">
+                  <div className={`w-14 h-14 ${song.art} rounded-2xl flex-shrink-0 flex items-center justify-center font-black text-xs shadow-lg shadow-black/40`}>ZS</div>
+                  <div className="truncate">
+                    <h4 className={`font-bold text-sm truncate transition-colors ${currentSong?.id === song.id ? 'text-orange-500' : ''}`}>
+                      {song.title}
+                    </h4>
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-[11px] text-slate-400 font-medium truncate">{song.artist}</p>
+                      <CheckCircle size={10} className="text-blue-400 fill-blue-400/10" />
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-[10px] font-bold text-slate-600 hidden md:inline">{song.plays} plays</span>
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${currentSong?.id === song.id && isPlaying ? 'bg-orange-500 text-white' : 'bg-white/5 text-orange-500 group-hover:bg-orange-500 group-hover:text-white'}`}>
+                    {currentSong?.id === song.id && isPlaying ? <Pause size={18} /> : <Play size={18} className="ml-1" />}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* MASTER PLAYER ENGINE */}
+      <div className={`fixed bottom-6 left-4 right-4 bg-[#0f172a]/90 backdrop-blur-2xl rounded-[2.5rem] p-5 shadow-2xl shadow-black border border-white/10 z-[100] transition-all duration-700 ${currentSong ? 'translate-y-0 opacity-100' : 'translate-y-[200%] opacity-0'}`}>
+        <div className="flex items-center gap-4 mb-5">
+          <div className={`w-14 h-14 ${currentSong?.art || 'bg-slate-800'} rounded-2xl flex-shrink-0 flex items-center justify-center font-black text-xl shadow-lg animate-pulse`}>ZS</div>
+          <div className="flex-1 min-w-0">
+            <h4 className="font-extrabold text-sm truncate leading-tight">{currentSong?.title || 'Nothing Playing'}</h4>
+            <div className="flex items-center gap-1.5">
+              <p className="text-[11px] text-slate-400 font-medium truncate">{currentSong?.artist}</p>
+              <CheckCircle size={10} className="text-blue-400" />
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+             <button className="w-10 h-10 rounded-full flex items-center justify-center text-slate-400 hover:text-white">
+              <Share2 size={18} />
+            </button>
+            <button 
+              onClick={() => setIsPlaying(!isPlaying)}
+              className="w-14 h-14 bg-white text-black rounded-[1.4rem] flex items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-all"
+            >
+              {isPlaying ? <Pause size={28} fill="black" /> : <Play size={28} fill="black" className="ml-1" />}
+            </button>
+          </div>
         </div>
 
-        <button onclick="showPage('profile')" class="flex items-center gap-2 bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full border border-white/10 transition-all">
-            <div class="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center text-[10px] font-bold">ZS</div>
-            <span class="text-xs font-bold">Library</span>
-        </button>
-    </nav>
-
-    <div id="homePage" class="page-content px-6 mt-8">
-        <header class="relative h-64 overflow-hidden rounded-3xl mb-12">
-            <img src="https://images.unsplash.com/photo-1514525253344-99a429996592?auto=format&fit=crop&q=80&w=1200" class="w-full h-full object-cover opacity-50" alt="Concert">
-            <div class="absolute inset-0 bg-gradient-to-t from-[#0b0e14] to-transparent"></div>
-            <div class="absolute bottom-8 left-8">
-                <h2 class="text-4xl font-black mb-2 italic">Zambian Bangers 🇿🇲</h2>
-                <p class="text-slate-300 text-sm">Streaming the heart of Lusaka & the Copperbelt.</p>
+        {/* SCRUBBER */}
+        <div className="px-1">
+          <div className="relative w-full h-1.5 bg-white/10 rounded-full cursor-pointer group" onClick={handleSeek}>
+            <div 
+              className="absolute top-0 left-0 h-full bg-orange-500 rounded-full transition-all duration-100 flex items-center justify-end"
+              style={{ width: `${progress}%` }}
+            >
+              <div className="w-3 h-3 bg-white rounded-full scale-0 group-hover:scale-100 transition-transform shadow-lg" />
             </div>
-        </header>
-
-        <section class="mb-12 p-6 rounded-3xl bg-orange-600/5 border border-orange-500/10">
-            <div class="flex items-center gap-3 mb-2">
-                <span class="text-lg">✨</span>
-                <h3 class="font-bold">Gemini Artist Scout</h3>
+          </div>
+          <div className="flex justify-between mt-2 text-[10px] font-bold text-slate-500 font-mono tracking-tighter">
+            <span>{formatTime(currentTime)}</span>
+            <div className="flex items-center gap-1 opacity-40">
+              <Volume2 size={10} />
+              <span>High Quality</span>
             </div>
-            <p class="text-xs text-slate-400 mb-4">Discover local talent. Ask for a genre (e.g., Hip Hop, Kalindula).</p>
-            <div class="flex gap-2">
-                <input id="genreQuery" type="text" placeholder="Enter genre..." class="flex-1 bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-sm outline-none focus:border-orange-500">
-                <button onclick="getAiRec()" class="bg-orange-600 px-4 py-2 rounded-xl text-xs font-bold uppercase">Find</button>
-            </div>
-            <div id="aiOutput" class="mt-3 text-xs text-orange-400 font-medium italic"></div>
-        </section>
-
-        <section class="mb-12">
-            <h3 class="text-xl font-bold mb-6 italic">Featured Genres</h3>
-            <div class="grid grid-cols-2 gap-4">
-                <div class="h-28 rounded-2xl p-4 bg-green-900/40 border border-green-500/20 flex flex-col justify-end cursor-pointer">
-                    <span class="text-[10px] font-black uppercase text-green-400">Roots</span>
-                    <h4 class="font-bold">Kalindula</h4>
-                </div>
-                <div class="h-28 rounded-2xl p-4 bg-orange-900/40 border border-orange-500/20 flex flex-col justify-end cursor-pointer">
-                    <span class="text-[10px] font-black uppercase text-orange-400">Pop</span>
-                    <h4 class="font-bold">Zed-Pop</h4>
-                </div>
-            </div>
-        </section>
+            <span>{formatTime(duration)}</span>
+          </div>
+        </div>
+      </div>
     </div>
+  );
+};
 
-    <div id="artistPage" class="page-content px-6 mt-8 hidden">
-        <div class="glass-card p-8 rounded-3xl text-center mb-8">
-            <div class="w-24 h-24 bg-orange-500 rounded-full mx-auto mb-4 flex items-center justify-center text-3xl font-black">YM</div>
-            <h2 class="text-2xl font-black italic">Yo Maps</h2>
-            <p class="text-orange-500 text-xs font-bold tracking-widest uppercase">Verifie                         <h3 class="font-bold text-sm">${song.title}</h3>
-                                <p class="text-[10px] opacity-50 uppercase font-bold tracking-tighter">${song.artist} • ${song.genre}</p>
-                            </div>
-                        </div>
-                        <div class="text-copper">
-                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+export default App;                           <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
                             </svg>
                         </div>
                     </div>
