@@ -1,104 +1,81 @@
-   <!DOCTYPE html>
+       <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZedSounds | Trending Zambian Music</title>
+    <title>ZedSounds | Zambian Music Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; }
-        .copper-accent { color: #f97316; }
-        .bg-copper { background-color: #f97316; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        body { background-color: #0b0e14; color: #e2e8f0; font-family: 'Inter', sans-serif; }
+        .copper-gradient { background: linear-gradient(135deg, #d9480f 0%, #f76707 100%); }
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); transition: 0.3s; }
+        .glass-card:hover { background: rgba(255, 255, 255, 0.06); transform: translateY(-5px); }
+        .music-player { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border-top: 1px solid rgba(255, 255, 255, 0.1); }
+        .active-tab { border-bottom: 2px solid #d9480f; color: white; }
     </style>
 </head>
 <body class="pb-32">
 
-    <header class="p-6 flex justify-between items-center sticky top-0 bg-[#0f172a]/90 backdrop-blur-md z-50">
-        <div>
-            <h1 class="text-2xl font-black tracking-tighter">ZED<span class="copper-accent">SOUNDS</span></h1>
-            <p class="text-[10px] uppercase tracking-widest opacity-60">Real-time Trending 🇿🇲</p>
+    <nav class="flex items-center justify-between px-6 py-4 sticky top-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/5">
+        <div class="flex items-center gap-2 cursor-pointer" onclick="showPage('home')">
+            <div class="w-10 h-10 copper-gradient rounded-xl flex items-center justify-center font-black text-white italic shadow-lg shadow-orange-900/40">ZS</div>
+            <h1 class="text-xl font-bold tracking-tighter">ZED<span class="text-orange-500">SOUNDS</span></h1>
         </div>
-        <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center">
-            🎵
+        
+        <div class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-400">
+            <button onclick="showPage('home')" class="hover:text-white transition-colors">Home</button>
+            <button onclick="showPage('artist')" class="hover:text-white transition-colors">Artist Portal</button>
         </div>
-    </header>
 
-    <section class="px-6 mb-8">
-        <h2 class="text-sm font-bold mb-4 opacity-50 uppercase tracking-widest">Categories</h2>
-        <div class="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
-            <button onclick="filterGenre('All')" class="px-5 py-2 glass rounded-full text-xs font-bold whitespace-nowrap">All</button>
-            <button onclick="filterGenre('Zed-Pop')" class="px-5 py-2 glass rounded-full text-xs font-bold whitespace-nowrap">Zed-Pop</button>
-            <button onclick="filterGenre('Kalindula')" class="px-5 py-2 glass rounded-full text-xs font-bold whitespace-nowrap">Kalindula</button>
-            <button onclick="filterGenre('Hip-Hop')" class="px-5 py-2 glass rounded-full text-xs font-bold whitespace-nowrap">Hip-Hop</button>
-            <button onclick="filterGenre('Zamrock')" class="px-5 py-2 glass rounded-full text-xs font-bold whitespace-nowrap">Zamrock</button>
-        </div>
-    </section>
+        <button onclick="showPage('profile')" class="flex items-center gap-2 bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full border border-white/10 transition-all">
+            <div class="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center text-[10px] font-bold">ZS</div>
+            <span class="text-xs font-bold">Library</span>
+        </button>
+    </nav>
 
-    <section class="px-6">
-        <h2 class="text-lg font-bold mb-4 italic">Trending Now</h2>
-        <div id="song-list" class="space-y-4">
+    <div id="homePage" class="page-content px-6 mt-8">
+        <header class="relative h-64 overflow-hidden rounded-3xl mb-12">
+            <img src="https://images.unsplash.com/photo-1514525253344-99a429996592?auto=format&fit=crop&q=80&w=1200" class="w-full h-full object-cover opacity-50" alt="Concert">
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0b0e14] to-transparent"></div>
+            <div class="absolute bottom-8 left-8">
+                <h2 class="text-4xl font-black mb-2 italic">Zambian Bangers 🇿🇲</h2>
+                <p class="text-slate-300 text-sm">Streaming the heart of Lusaka & the Copperbelt.</p>
             </div>
-    </section>
+        </header>
 
-    <footer id="player-bar" class="fixed bottom-0 left-0 right-0 glass p-4 translate-y-full transition-transform duration-500 z-50">
-        <div class="max-w-md mx-auto flex items-center gap-4">
-            <div id="player-art" class="w-12 h-12 bg-copper rounded-lg flex items-center justify-center font-bold">ZS</div>
-            <div class="flex-1 min-w-0">
-                <h4 id="current-title" class="text-sm font-bold truncate">Song Title</h4>
-                <p id="current-artist" class="text-xs opacity-60">Artist Name</p>
+        <section class="mb-12 p-6 rounded-3xl bg-orange-600/5 border border-orange-500/10">
+            <div class="flex items-center gap-3 mb-2">
+                <span class="text-lg">✨</span>
+                <h3 class="font-bold">Gemini Artist Scout</h3>
             </div>
-            <div class="flex items-center gap-4">
-                <button onclick="togglePlay()" id="play-btn" class="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center shadow-lg">▶</button>
-                <a id="download-link" href="#" download class="text-copper font-bold text-[10px] uppercase">Save</a>
+            <p class="text-xs text-slate-400 mb-4">Discover local talent. Ask for a genre (e.g., Hip Hop, Kalindula).</p>
+            <div class="flex gap-2">
+                <input id="genreQuery" type="text" placeholder="Enter genre..." class="flex-1 bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-sm outline-none focus:border-orange-500">
+                <button onclick="getAiRec()" class="bg-orange-600 px-4 py-2 rounded-xl text-xs font-bold uppercase">Find</button>
             </div>
-        </div>
-        <div class="mt-3 h-1 bg-slate-700 rounded-full overflow-hidden">
-            <div id="progress" class="h-full bg-copper w-0 transition-all"></div>
-        </div>
-    </footer>
+            <div id="aiOutput" class="mt-3 text-xs text-orange-400 font-medium italic"></div>
+        </section>
 
-    <audio id="main-audio" src=""></audio>
+        <section class="mb-12">
+            <h3 class="text-xl font-bold mb-6 italic">Featured Genres</h3>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="h-28 rounded-2xl p-4 bg-green-900/40 border border-green-500/20 flex flex-col justify-end cursor-pointer">
+                    <span class="text-[10px] font-black uppercase text-green-400">Roots</span>
+                    <h4 class="font-bold">Kalindula</h4>
+                </div>
+                <div class="h-28 rounded-2xl p-4 bg-orange-900/40 border border-orange-500/20 flex flex-col justify-end cursor-pointer">
+                    <span class="text-[10px] font-black uppercase text-orange-400">Pop</span>
+                    <h4 class="font-bold">Zed-Pop</h4>
+                </div>
+            </div>
+        </section>
+    </div>
 
-    <script>
-        // THE MUSIC DATABASE
-        // Replace the 'url' with a link to a real .mp3 file to make it play!
-        const playlist = [
-            {
-                title: "Amapalo",
-                artist: "Yo Maps",
-                genre: "Zed-Pop",
-                url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" // Example Link
-            },
-            {
-                title: "Psychology",
-                artist: "Chef 187",
-                genre: "Hip-Hop",
-                url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
-            },
-            {
-                title: "Traditional Jam",
-                artist: "Copperbelt Stars",
-                genre: "Kalindula",
-                url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
-            }
-        ];
-
-        const songListContainer = document.getElementById('song-list');
-        const audio = document.getElementById('main-audio');
-        const playerBar = document.getElementById('player-bar');
-        const playBtn = document.getElementById('play-btn');
-
-        // Function to display songs
-        function displaySongs(songs) {
-            songListContainer.innerHTML = '';
-            songs.forEach((song, index) => {
-                songListContainer.innerHTML += `
-                    <div class="flex items-center justify-between p-3 glass rounded-2xl active:bg-slate-700 transition-colors" onclick="loadSong(${index})">
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center text-xs font-bold text-copper">${index + 1}</div>
-                            <div>
-                                <h3 class="font-bold text-sm">${song.title}</h3>
+    <div id="artistPage" class="page-content px-6 mt-8 hidden">
+        <div class="glass-card p-8 rounded-3xl text-center mb-8">
+            <div class="w-24 h-24 bg-orange-500 rounded-full mx-auto mb-4 flex items-center justify-center text-3xl font-black">YM</div>
+            <h2 class="text-2xl font-black italic">Yo Maps</h2>
+            <p class="text-orange-500 text-xs font-bold tracking-widest uppercase">Verifie                         <h3 class="font-bold text-sm">${song.title}</h3>
                                 <p class="text-[10px] opacity-50 uppercase font-bold tracking-tighter">${song.artist} • ${song.genre}</p>
                             </div>
                         </div>
