@@ -1,111 +1,177 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ZedSounds Lite: Phase 2 Strategic Report</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<!-- Chosen Palette: Warm Zambian Neutrals (Alabaster Background, Soft Terracotta Accents, Deep Charcoal Text, Sage Green highlights) -->
-<!-- Application Structure Plan: The application uses a dashboard-style interactive layout designed to synthesize the Phase 2 upgrade plan. It prioritizes user understanding by dividing the content into three logical phases: Strategic Overview (context), Feature Analysis (interactive exploration of the 3 key features via tabs alongside dynamic data visualization), and Actionable Deployment (interactive implementation checklist). This structure was chosen because it transforms a flat text document into an exploratory analytical tool, allowing stakeholders to understand the 'why' (metrics/impact) alongside the 'what' (features). -->
-<!-- Visualization & Content Choices: Source Report -> Goal: Compare/Inform -> Viz: Chart.js Radar Chart & Interactive Tabs & Progress Bar -> Interaction: Tab clicking updates chart datasets and content panes; checklist clicking updates progress bar -> Justification: A radar chart perfectly illustrates the multidimensional impact (Engagement, Data Efficiency, Monetization) of each feature. Tabs prevent cognitive overload. The progress bar turns static deployment steps into a satisfying interactive process. -> Library: Chart.js (Canvas), Vanilla JS, HTML/CSS. Confirming NO SVG or Mermaid used. -->
-<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
-
-<style>
-.chart-container {
-    position: relative;
-    width: 100%;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-    height: 300px;
-    max-height: 400px;
-}
-@media (min-width: 768px) {
-    .chart-container {
-        height: 350px;
-    }
-}
-.tab-active {
-    background-color: #C27A65;
-    color: #F5F2E9;
-    border-color: #C27A65;
-}
-.tab-inactive {
-    background-color: transparent;
-    color: #2D2D2D;
-    border-color: #D1CFC7;
-}
-.step-completed {
-    background-color: #8BA88E;
-    color: #F5F2E9;
-    border-color: #8BA88E;
-}
-.custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
-}
-.custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-    background-color: #D1CFC7;
-    border-radius: 20px;
-}
-</style>
-<script>
-    tailwind.config = {
-        theme: {
-            extend: {
-                colors: {
-                    alabaster: '#F5F2E9',
-                    charcoal: '#2D2D2D',
-                    terracotta: '#C27A65',
-                    sage: '#8BA88E',
-                    borderline: '#D1CFC7'
-                },
-                fontFamily: {
-                    sans: ['Inter', 'system-ui', 'sans-serif'],
-                }
-            }
-        }
-    }
-</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZedSounds Lite | The Home of Zambian Music</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0b0e14; color: #e2e8f0; font-family: 'Inter', sans-serif; }
+        .copper-gradient { background: linear-gradient(135deg, #d9480f 0%, #f76707 100%); }
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 1.5rem; }
+        .wa-green { background-color: #25d366; color: #fff; }
+        .active-tab { border-bottom: 2px solid #d9480f; color: white; }
+    </style>
 </head>
-<body class="bg-alabaster text-charcoal font-sans antialiased overflow-x-hidden custom-scrollbar">
+<body class="pb-32">
 
-<div class="max-w-6xl mx-auto px-4 py-8 md:py-12">
-    
-    <header class="mb-12 border-b border-borderline pb-8">
-        <div class="flex items-center gap-3 mb-4">
-            <span class="text-4xl">🇿🇲</span>
-            <h1 class="text-4xl md:text-5xl font-black tracking-tight text-charcoal">ZedSounds Lite</h1>
+    <!-- Navigation -->
+    <nav class="flex items-center justify-between px-4 py-4 sticky top-0 z-50 bg-black/90 backdrop-blur-md border-b border-white/5">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 copper-gradient rounded-lg flex items-center justify-center font-black text-white italic shadow-lg">ZS</div>
+            <h1 class="text-md font-bold tracking-tighter uppercase">ZED<span class="text-orange-500">SOUNDS</span></h1>
         </div>
-        <h2 class="text-xl md:text-2xl text-terracotta font-medium tracking-wide">Phase 2 Interactive Strategic Report</h2>
-    </header>
+        <div class="flex items-center gap-2">
+            <span class="text-[9px] font-bold text-green-500 bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20">LITE MODE</span>
+        </div>
+    </nav>
 
-    <section class="mb-16">
-        <h3 class="text-2xl font-bold mb-4 flex items-center gap-2"><span>📊</span> Strategic Overview</h3>
-        <p class="text-lg leading-relaxed text-charcoal/80 max-w-4xl">
-            This section contextualizes the transition from a conceptual prototype to a live, functional product at <code class="bg-borderline/30 px-2 py-1 rounded text-terracotta text-sm font-bold">lombesquared03.github.io/zedsounds/</code>. The primary directive of Phase 2 is to maximize platform functionality while strictly minimizing data load, catering directly to the Zambian mobile market constraints. The following interactive dashboard analyzes the three core features designed to achieve this balance.
-        </p>
-    </section>
+    <main class="px-4 mt-6">
+        <!-- Main Featured Release Card -->
+        <div class="glass-card p-5 mb-8 relative overflow-hidden">
+            <div class="relative z-10">
+                <span class="text-[10px] font-black uppercase text-orange-500 tracking-widest mb-1 block">New Trending</span>
+                <h2 class="text-2xl font-black italic mb-4">Amapalo</h2>
+                
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-14 h-14 bg-slate-800 rounded-xl flex items-center justify-center text-2xl">🎵</div>
+                    <div>
+                        <p class="font-bold text-lg">Yo Maps</p>
+                        <p class="text-[11px] text-slate-500">Zed-Pop • Featured Single</p>
+                    </div>
+                </div>
 
-    <section class="mb-16 bg-white rounded-3xl p-6 md:p-10 shadow-sm border border-borderline/50">
-        <div class="mb-8">
-            <h3 class="text-2xl font-bold mb-3 flex items-center gap-2"><span>⚙️</span> Feature Analysis & Impact</h3>
-            <p class="text-md leading-relaxed text-charcoal/70">
-                Explore the technical features proposed for the Phase 2 upgrade. Click on the tabs below to reveal the specific functionality of each feature, its strategic purpose, and observe how it alters the projected performance metrics on the multidimensional radar chart. This visualizes the trade-offs and benefits of each lightweight addition.
-            </p>
+                <!-- Action Buttons -->
+                <div class="flex flex-col gap-3">
+                    <button onclick="playSong('Amapalo', 'Yo Maps')" class="copper-gradient w-full py-4 rounded-xl font-black text-sm uppercase tracking-widest shadow-lg active:scale-95 transition-transform">
+                        Play Now
+                    </button>
+                    
+                    <button onclick="shareOnWhatsApp('Amapalo by Yo Maps')" class="wa-green w-full py-3 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-transform">
+                        <span>Share on WhatsApp</span>
+                    </button>
+                </div>
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+        <!-- AI Artist Scout Section -->
+        <section class="mb-8 p-5 glass-card border-orange-500/20">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="text-lg">✨</span>
+                <h3 class="font-bold text-sm">Gemini Artist Scout</h3>
+            </div>
+            <p class="text-[11px] text-slate-400 mb-4">Type a genre to find Zambian talent.</p>
+            <div class="flex gap-2">
+                <input id="genreInput" type="text" placeholder="e.g. Zamrock" class="flex-1 bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-sm outline-none focus:border-orange-500">
+                <button onclick="scoutArtist()" class="bg-white text-black px-4 py-2 rounded-xl text-[10px] font-black uppercase">Find</button>
+            </div>
+            <div id="scoutOutput" class="mt-3 text-[11px] text-orange-400 font-medium italic min-h-[1rem]"></div>
+        </section>
+
+        <!-- Categories -->
+        <h3 class="font-bold text-xs mb-4 uppercase tracking-widest text-slate-500 px-1">Browse Genres</h3>
+        <div class="grid grid-cols-2 gap-3 mb-8">
+            <div class="p-5 glass-card border-green-500/10">
+                <h4 class="font-bold text-sm">Kalindula</h4>
+                <p class="text-[9px] text-slate-500">Traditional Vibes</p>
+            </div>
+            <div class="p-5 glass-card border-blue-500/10">
+                <h4 class="font-bold text-sm">Zamrock</h4>
+                <p class="text-[9px] text-slate-500">70s Rock Heritage</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Simple Music Player Bar -->
+    <div id="playerBar" class="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-xl border-t border-white/10 h-20 px-5 flex items-center justify-between z-50 translate-y-full transition-transform duration-300">
+        <div class="flex items-center gap-3 w-2/3">
+            <div class="w-10 h-10 copper-gradient rounded-lg flex items-center justify-center text-white font-bold text-xs">ZS</div>
+            <div class="overflow-hidden">
+                <p id="pTitle" class="font-bold text-xs truncate">Song Title</p>
+                <p id="pArtist" class="text-[10px] text-slate-500">Artist</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <button onclick="togglePlay()" id="playBtn" class="w-10 h-10 bg-white text-black rounded-full font-bold flex items-center justify-center shadow-lg">▶</button>
+        </div>
+    </div>
+
+    <script>
+        // WhatsApp Sharing
+        function shareOnWhatsApp(text) {
+            const url = encodeURIComponent(window.location.href);
+            window.open(`https://wa.me/?text=Yo! Listen to ${text} on ZedSounds! 🇿🇲 ${url}`, '_blank');
+        }
+
+        // Gemini Artist Scout Logic
+        function scoutArtist() {
+            const input = document.getElementById('genreInput');
+            const output = document.getElementById('scoutOutput');
+            const genre = input.value.trim().toLowerCase();
             
-            <div class="lg:col-span-5 flex flex-col gap-4">
-                <div class="flex flex-col gap-3" id="tab-container">
-                    <button data-feature="search" class="tab-btn tab-active border-2 text-left px-5 py-4 rounded-2xl font-bold text-lg transition-all duration-300 flex justify-between items-center group">
-                        <span class="flex items-center gap-3"><span class="text-2xl">✨</span> Data-Saver Search</span>
-                        <span class="opacity-50 group-hover:opacity-100 transition-opacity">▶</span>
+            if(!genre) return;
+
+            output.innerText = "Consulting the archives...";
+            
+            setTimeout(() => {
+                if(genre.includes('pop')) {
+                    output.innerText = "Check out Yo Maps, T-Low, and Chile One Mr Zambia.";
+                } else if(genre.includes('rock')) {
+                    output.innerText = "WITCH and Amanaz are essential Zamrock listening.";
+                } else if(genre.includes('hip')) {
+                    output.innerText = "Chef 187, Slapdee, and Macky 2 lead the game.";
+                } else {
+                    output.innerText = "Try searching for Zed-Pop, Kalindula, or Zamrock!";
+                }
+            }, 800);
+        }
+
+        // Player Controls
+        let isPlaying = false;
+        function playSong(t, a) {
+            document.getElementById('pTitle').innerText = t;
+            document.getElementById('pArtist').innerText = a;
+            document.getElementById('playerBar').classList.remove('translate-y-full');
+            isPlaying = true;
+            document.getElementById('playBtn').innerText = '⏸';
+        }
+
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            document.getElementById('playBtn').innerText = isPlaying ? '⏸' : '▶';
+        }
+    </script>
+</body>
+</html>          setTimeout(() => {
+                if(genre.includes('pop')) {
+                    output.innerText = "Check out Yo Maps, T-Low, and Chile One Mr Zambia.";
+                } else if(genre.includes('rock')) {
+                    output.innerText = "WITCH and Amanaz are essential Zamrock listening.";
+                } else if(genre.includes('hip')) {
+                    output.innerText = "Chef 187, Slapdee, and Macky 2 lead the game.";
+                } else {
+                    output.innerText = "Try searching for Zed-Pop, Kalindula, or Zamrock!";
+                }
+            }, 800);
+        }
+
+        // Player Controls
+        let isPlaying = false;
+        function playSong(t, a) {
+            document.getElementById('pTitle').innerText = t;
+            document.getElementById('pArtist').innerText = a;
+            document.getElementById('playerBar').classList.remove('translate-y-full');
+            isPlaying = true;
+            document.getElementById('playBtn').innerText = '⏸';
+        }
+
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            document.getElementById('playBtn').innerText = isPlaying ? '⏸' : '▶';
+        }
+    </script>
+</body>
+</html>                  <span class="opacity-50 group-hover:opacity-100 transition-opacity">▶</span>
                     </button>
                     <button data-feature="whatsapp" class="tab-btn tab-inactive border-2 text-left px-5 py-4 rounded-2xl font-bold text-lg transition-all duration-300 flex justify-between items-center group">
                         <span class="flex items-center gap-3"><span class="text-2xl">📱</span> WhatsApp Sharing</span>
