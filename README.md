@@ -1,140 +1,162 @@
-  <!DOCTYPE html>
+   <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZedSounds Lite | The Home of Zambian Music</title>
+    <title>ZedSounds | Trending Zambian Music</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0b0e14; color: #e2e8f0; font-family: 'Inter', sans-serif; }
-        .copper-gradient { background: linear-gradient(135deg, #d9480f 0%, #f76707 100%); }
-        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 1.5rem; }
-        .wa-green { background-color: #25d366; color: #fff; }
-        .active-tab { border-bottom: 2px solid #d9480f; color: white; }
+        body { background-color: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; }
+        .copper-accent { color: #f97316; }
+        .bg-copper { background-color: #f97316; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
     </style>
 </head>
 <body class="pb-32">
 
-    <!-- Navigation -->
-    <nav class="flex items-center justify-between px-4 py-4 sticky top-0 z-50 bg-black/90 backdrop-blur-md border-b border-white/5">
-        <div class="flex items-center gap-2">
-            <div class="w-8 h-8 copper-gradient rounded-lg flex items-center justify-center font-black text-white italic shadow-lg">ZS</div>
-            <h1 class="text-md font-bold tracking-tighter uppercase">ZED<span class="text-orange-500">SOUNDS</span></h1>
+    <header class="p-6 flex justify-between items-center sticky top-0 bg-[#0f172a]/90 backdrop-blur-md z-50">
+        <div>
+            <h1 class="text-2xl font-black tracking-tighter">ZED<span class="copper-accent">SOUNDS</span></h1>
+            <p class="text-[10px] uppercase tracking-widest opacity-60">Real-time Trending 🇿🇲</p>
         </div>
-        <div class="flex items-center gap-2">
-            <span class="text-[9px] font-bold text-green-500 bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20">LITE MODE</span>
+        <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center">
+            🎵
         </div>
-    </nav>
+    </header>
 
-    <main class="px-4 mt-6">
-        <!-- Main Featured Release Card -->
-        <div class="glass-card p-5 mb-8 relative overflow-hidden">
-            <div class="relative z-10">
-                <span class="text-[10px] font-black uppercase text-orange-500 tracking-widest mb-1 block">New Trending</span>
-                <h2 class="text-2xl font-black italic mb-4">Amapalo</h2>
-                
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="w-14 h-14 bg-slate-800 rounded-xl flex items-center justify-center text-2xl">🎵</div>
-                    <div>
-                        <p class="font-bold text-lg">Yo Maps</p>
-                        <p class="text-[11px] text-slate-500">Zed-Pop • Featured Single</p>
-                    </div>
-                </div>
+    <section class="px-6 mb-8">
+        <h2 class="text-sm font-bold mb-4 opacity-50 uppercase tracking-widest">Categories</h2>
+        <div class="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+            <button onclick="filterGenre('All')" class="px-5 py-2 glass rounded-full text-xs font-bold whitespace-nowrap">All</button>
+            <button onclick="filterGenre('Zed-Pop')" class="px-5 py-2 glass rounded-full text-xs font-bold whitespace-nowrap">Zed-Pop</button>
+            <button onclick="filterGenre('Kalindula')" class="px-5 py-2 glass rounded-full text-xs font-bold whitespace-nowrap">Kalindula</button>
+            <button onclick="filterGenre('Hip-Hop')" class="px-5 py-2 glass rounded-full text-xs font-bold whitespace-nowrap">Hip-Hop</button>
+            <button onclick="filterGenre('Zamrock')" class="px-5 py-2 glass rounded-full text-xs font-bold whitespace-nowrap">Zamrock</button>
+        </div>
+    </section>
 
-                <!-- Action Buttons -->
-                <div class="flex flex-col gap-3">
-                    <button onclick="playSong('Amapalo', 'Yo Maps')" class="copper-gradient w-full py-4 rounded-xl font-black text-sm uppercase tracking-widest shadow-lg active:scale-95 transition-transform">
-                        Play Now
-                    </button>
-                    
-                    <button onclick="shareOnWhatsApp('Amapalo by Yo Maps')" class="wa-green w-full py-3 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-transform">
-                        <span>Share on WhatsApp</span>
-                    </button>
-                </div>
+    <section class="px-6">
+        <h2 class="text-lg font-bold mb-4 italic">Trending Now</h2>
+        <div id="song-list" class="space-y-4">
+            </div>
+    </section>
+
+    <footer id="player-bar" class="fixed bottom-0 left-0 right-0 glass p-4 translate-y-full transition-transform duration-500 z-50">
+        <div class="max-w-md mx-auto flex items-center gap-4">
+            <div id="player-art" class="w-12 h-12 bg-copper rounded-lg flex items-center justify-center font-bold">ZS</div>
+            <div class="flex-1 min-w-0">
+                <h4 id="current-title" class="text-sm font-bold truncate">Song Title</h4>
+                <p id="current-artist" class="text-xs opacity-60">Artist Name</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="togglePlay()" id="play-btn" class="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center shadow-lg">▶</button>
+                <a id="download-link" href="#" download class="text-copper font-bold text-[10px] uppercase">Save</a>
             </div>
         </div>
-
-        <!-- AI Artist Scout Section -->
-        <section class="mb-8 p-5 glass-card border-orange-500/20">
-            <div class="flex items-center gap-2 mb-3">
-                <span class="text-lg">✨</span>
-                <h3 class="font-bold text-sm">Gemini Artist Scout</h3>
-            </div>
-            <p class="text-[11px] text-slate-400 mb-4">Type a genre to find Zambian talent.</p>
-            <div class="flex gap-2">
-                <input id="genreInput" type="text" placeholder="e.g. Zamrock" class="flex-1 bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-sm outline-none focus:border-orange-500">
-                <button onclick="scoutArtist()" class="bg-white text-black px-4 py-2 rounded-xl text-[10px] font-black uppercase">Find</button>
-            </div>
-            <div id="scoutOutput" class="mt-3 text-[11px] text-orange-400 font-medium italic min-h-[1rem]"></div>
-        </section>
-
-        <!-- Categories -->
-        <h3 class="font-bold text-xs mb-4 uppercase tracking-widest text-slate-500 px-1">Browse Genres</h3>
-        <div class="grid grid-cols-2 gap-3 mb-8">
-            <div class="p-5 glass-card border-green-500/10">
-                <h4 class="font-bold text-sm">Kalindula</h4>
-                <p class="text-[9px] text-slate-500">Traditional Vibes</p>
-            </div>
-            <div class="p-5 glass-card border-blue-500/10">
-                <h4 class="font-bold text-sm">Zamrock</h4>
-                <p class="text-[9px] text-slate-500">70s Rock Heritage</p>
-            </div>
+        <div class="mt-3 h-1 bg-slate-700 rounded-full overflow-hidden">
+            <div id="progress" class="h-full bg-copper w-0 transition-all"></div>
         </div>
-    </main>
+    </footer>
 
-    <!-- Simple Music Player Bar -->
-    <div id="playerBar" class="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-xl border-t border-white/10 h-20 px-5 flex items-center justify-between z-50 translate-y-full transition-transform duration-300">
-        <div class="flex items-center gap-3 w-2/3">
-            <div class="w-10 h-10 copper-gradient rounded-lg flex items-center justify-center text-white font-bold text-xs">ZS</div>
-            <div class="overflow-hidden">
-                <p id="pTitle" class="font-bold text-xs truncate">Song Title</p>
-                <p id="pArtist" class="text-[10px] text-slate-500">Artist</p>
-            </div>
-        </div>
-        <div class="flex items-center gap-4">
-            <button onclick="togglePlay()" id="playBtn" class="w-10 h-10 bg-white text-black rounded-full font-bold flex items-center justify-center shadow-lg">▶</button>
-        </div>
-    </div>
+    <audio id="main-audio" src=""></audio>
 
     <script>
-        // WhatsApp Sharing
-        function shareOnWhatsApp(text) {
-            const url = encodeURIComponent(window.location.href);
-            window.open(`https://wa.me/?text=Yo! Listen to ${text} on ZedSounds! 🇿🇲 ${url}`, '_blank');
+        // THE MUSIC DATABASE
+        // Replace the 'url' with a link to a real .mp3 file to make it play!
+        const playlist = [
+            {
+                title: "Amapalo",
+                artist: "Yo Maps",
+                genre: "Zed-Pop",
+                url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" // Example Link
+            },
+            {
+                title: "Psychology",
+                artist: "Chef 187",
+                genre: "Hip-Hop",
+                url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
+            },
+            {
+                title: "Traditional Jam",
+                artist: "Copperbelt Stars",
+                genre: "Kalindula",
+                url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
+            }
+        ];
+
+        const songListContainer = document.getElementById('song-list');
+        const audio = document.getElementById('main-audio');
+        const playerBar = document.getElementById('player-bar');
+        const playBtn = document.getElementById('play-btn');
+
+        // Function to display songs
+        function displaySongs(songs) {
+            songListContainer.innerHTML = '';
+            songs.forEach((song, index) => {
+                songListContainer.innerHTML += `
+                    <div class="flex items-center justify-between p-3 glass rounded-2xl active:bg-slate-700 transition-colors" onclick="loadSong(${index})">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center text-xs font-bold text-copper">${index + 1}</div>
+                            <div>
+                                <h3 class="font-bold text-sm">${song.title}</h3>
+                                <p class="text-[10px] opacity-50 uppercase font-bold tracking-tighter">${song.artist} • ${song.genre}</p>
+                            </div>
+                        </div>
+                        <div class="text-copper">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                `;
+            });
         }
 
-        // Gemini Artist Scout Logic
-        function scoutArtist() {
-            const input = document.getElementById('genreInput');
-            const output = document.getElementById('scoutOutput');
-            const genre = input.value.trim().toLowerCase();
+        // Load and Play Song
+        function loadSong(index) {
+            const song = playlist[index];
+            document.getElementById('current-title').innerText = song.title;
+            document.getElementById('current-artist').innerText = song.artist;
+            document.getElementById('download-link').href = song.url;
             
-            if(!genre) return;
-
-            output.innerText = "Consulting the archives...";
+            audio.src = song.url;
+            audio.play();
             
-            setTimeout(() => {
-                if(genre.includes('pop')) {
-                    output.innerText = "Check out Yo Maps, T-Low, and Chile One Mr Zambia.";
-                } else if(genre.includes('rock')) {
-                    output.innerText = "WITCH and Amanaz are essential Zamrock listening.";
-                } else if(genre.includes('hip')) {
-                    output.innerText = "Chef 187, Slapdee, and Macky 2 lead the game.";
-                } else {
-                    output.innerText = "Try searching for Zed-Pop, Kalindula, or Zamrock!";
-                }
-            }, 800);
+            playerBar.classList.remove('translate-y-full');
+            playBtn.innerText = '⏸';
         }
 
-        // Player Controls
-        let isPlaying = false;
-        function playSong(t, a) {
-            document.getElementById('pTitle').innerText = t;
-            document.getElementById('pArtist').innerText = a;
-            document.getElementById('playerBar').classList.remove('translate-y-full');
-            isPlaying = true;
-            document.getElementById('playBtn').innerText = '⏸';
+        function togglePlay() {
+            if (audio.paused) {
+                audio.play();
+                playBtn.innerText = '⏸';
+            } else {
+                audio.pause();
+                playBtn.innerText = '▶';
+            }
         }
+
+        // Update Progress Bar
+        audio.ontimeupdate = () => {
+            const perc = (audio.currentTime / audio.duration) * 100;
+            document.getElementById('progress').style.width = perc + '%';
+        };
+
+        // Filter by Genre
+        function filterGenre(genre) {
+            if (genre === 'All') {
+                displaySongs(playlist);
+            } else {
+                const filtered = playlist.filter(s => s.genre === genre);
+                displaySongs(filtered);
+            }
+        }
+
+        // Initial Load
+        displaySongs(playlist);
+    </script>
+</body>
+</html>     }
 
         function togglePlay() {
             isPlaying = !isPlaying;
